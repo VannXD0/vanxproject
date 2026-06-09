@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Vanx | Module Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<div id="loader">
+    <canvas id="loaderCanvas"></canvas>
+    <div class="loader-content">
+        <div class="spinner"></div>
+        <div id="loading-text">⟳ INITIALIZING VANX CORE...</div>
+        <div id="progress-bar"><div id="progress"></div></div>
+    </div>
+</div>
+
+<div class="bg-aura"></div>
+<div class="grid-lines"></div>
+
+<header class="main-header">
+    <div class="logo-area">
+        <h1 class="animated-logo">VANX</h1>
+        <span class="tagline">Module Premium</span>
+    </div>
+    <div class="header-actions">
+        <div class="lang-dropdown">
+            <button class="lang-toggle" id="langToggleBtn"><i class="fa-solid fa-globe"></i> ID <i class="fa-solid fa-chevron-down"></i></button>
+            <div class="lang-menu" id="langMenu">
+                <button class="lang-option" data-lang="id">Indonesia</button>
+                <button class="lang-option" data-lang="en">English</button>
+            </div>
+        </div>
+        <button class="menu-dots" id="menuDotsBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    </div>
+</header>
+
+<div class="container" id="mainContent" style="display: none;"></div>
+
+<div id="sideNav" class="side-overlay"></div>
+
+<div id="qrisModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalTitle">Scan QRIS untuk membayar</h3>
+        <div class="qris-img"><img src="img/qris.png" alt="QRIS"></div>
+        <div class="order-info">
+            <p id="modalAdminMsg"><strong>Hai admin, tolong cek pembayaran saya</strong></p>
+            <p>ID : <span id="transactionId">VNX-XXXXXX</span></p>
+            <p id="modalProductLabel">Product : <span id="modalProductName">-</span></p>
+            <p id="modalPriceLabel">Price : Rp <span id="modalProductPrice">0</span></p>
+        </div>
+        <div id="modalInstruksi" class="copy-instruksi">Jika sudah bayar, klik tombol di bawah. Jangan lupa sertakan bukti pembayaran.</div>
+        <div class="modal-buttons"><button class="btn-confirm" id="confirmPayBtn">Konfirmasi Pembayaran & Kirim Pesan</button></div>
+        <small id="modalFooterNote">Setelah transfer, klik tombol di atas untuk mengirim notifikasi ke admin.</small>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
