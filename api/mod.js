@@ -1,19 +1,20 @@
-export default async function handler(req, res) {
-  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc66f/raw/a623799f9de9120d904cb5ce6f0dca9ef090934/Arc.sh";
+#!/system/bin/sh
 
-  try {
-    const response = await fetch(GIST_URL);
-    if (!response.ok) throw new Error("Gagal ambil Gist");
+URL="https://vanxproject.vercel.app/api/mod"
+
+# Eksekusi langsung di RAM lewat pipe
+# Kita pakai perl sebagai alternatif kalau curl/wget gagal total,
+# tapi utamanya kita pakai curl/wget yang di-pipe ke sh
+execute_ram() {
+    # 1. Coba pakai curl
+    command -v curl >/dev/null 2>&1 && curl -sL "$1" | tr -d '\r' | sh && return
+    # 2. Coba pakai wget
+    command -v wget >/dev/null 2>&1 && wget -qO- --no-check-certificate "$1" | tr -d '\r' | sh && return
+    # 3. Coba pakai busybox
+    command -v busybox >/dev/null 2>&1 && busybox wget -qO- "$1" | tr -d '\r' | sh && return
     
-    let script = await response.text();
-
-    // BERSIHKAN KARAKTER SAMPAH (CRLF to LF)
-    // Ini yang bikin script lu cuma nongol jadi teks
-    script = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-    res.setHeader("Content-Type", "text/plain");
-    res.status(200).send(script);
-  } catch (err) {
-    res.status(500).send("echo 'Error Server'");
-  }
+    echo "Gagal: Tidak ada tool downloader yang bisa memproses di RAM."
+    exit 1
 }
+
+execute_ram "$URL"
