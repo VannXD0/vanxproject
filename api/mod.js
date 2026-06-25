@@ -1,11 +1,13 @@
 export default function handler(req, res) {
   const { type } = req.query;
 
+  const E = {
+    I: "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WYW5uWEQwL2U3YmEzNGYxZDY0MWQ0MGYyMDlmYzBiZjg5OWJjNmZmL3Jhdy9hODE5MWZkMzA3ZmQwZDQ4OWE4MDQ2YmRiYjFjNjg3ODIzMDcxYjQzL0FyYy5zaA==",
+    U: "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WYW5uWEQwL2U3YmEzNGYxZDY0MWQ0MGYyMDlmYzBiZjg5OWJjNmZmL3Jhdy81M2ZlOTNmMWEyYjFlMmNkMGI5MjBjMjk4NjQ1NTY1NmNkODljN2Y5L0FyYy5zaCUyMHU="
+  };
 
-  const INSTALL_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a8191fd307fd0d489a8046bdbb1c687823071b43/Arc.sh";
-  const UNINSTALL_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/53fe93f1a2b1e2cd0b920c2986455656cd89c7f9/Arc.sh%2520u";
-
-  const targetUrl = (type === 'uninstall') ? UNINSTALL_URL : INSTALL_URL;
+  const decode = (str) => Buffer.from(str, 'base64').toString('utf-8');
+  const targetUrl = (type === 'uninstall') ? decode(E.U) : decode(E.I);
 
   fetch(targetUrl)
     .then(response => response.text())
@@ -13,7 +15,7 @@ export default function handler(req, res) {
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
       res.status(200).send(data);
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send("# Gagal mengambil script dari server");
     });
 }
