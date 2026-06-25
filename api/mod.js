@@ -1,24 +1,18 @@
 export default async function handler(req, res) {
-  // Link Gist RAW lu yang sudah terbukti valid
-  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a623799f90de9120d904cb5ce6f0dca9ef090934/Arc.sh";
+  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a623799f9de9120d904cb5ce6f0dca9ef090934/Arc.sh";
 
   try {
     const response = await fetch(GIST_URL);
-    
-    if (!response.ok) {
-      return res.status(response.status).send(`echo 'Gist error: ${response.status}'`);
-    }
+    let script = await response.text();
 
-    const script = await response.text();
+    // BERSIHKAN SEMUA KARAKTER ANEH
+    // Ini buat ngapus semua karakter non-printable yang sering bikin error ')'
+    script = script.replace(/[^\x00-\x7F]/g, ""); 
+    script = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-    // Membersihkan karakter \r (CR) yang bikin terminal Android lu error/print teks
-    const cleanScript = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-    // Set header biar terminal tahu ini script shell
     res.setHeader("Content-Type", "text/plain");
-    return res.status(200).send(cleanScript);
-
+    res.status(200).send(script);
   } catch (err) {
-    return res.status(500).send(`echo 'Vercel Fetch Error: ${err.message}'`);
+    res.status(500).send("echo 'Error Server'");
   }
 }
