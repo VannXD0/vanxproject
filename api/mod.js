@@ -2,20 +2,18 @@ export default async function handler(req, res) {
   const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc66f/raw/a623799f9de9120d904cb5ce6f0dca9ef090934/Arc.sh";
 
   try {
-    // Kita gunakan fetch dengan opsi yang lebih "ramah" buat Vercel serverless
-    const response = await fetch(GIST_URL, {
-      method: 'GET',
-      headers: { 'Cache-Control': 'no-cache' }
-    });
+    const response = await fetch(GIST_URL);
+    if (!response.ok) throw new Error("Gagal ambil Gist");
+    
+    let script = await response.text();
 
-    if (!response.ok) throw new Error("Gist tidak merespon");
-
-    const data = await response.text();
+    // BERSIHKAN KARAKTER SAMPAH (CRLF to LF)
+    // Ini yang bikin script lu cuma nongol jadi teks
+    script = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
     res.setHeader("Content-Type", "text/plain");
-    return res.status(200).send(data);
+    res.status(200).send(script);
   } catch (err) {
-    // Kalo error, kita kirim pesan yang gak bikin shell AxManager crash
-    res.status(500).send("echo 'Server Gagal Bridge Gist'");
+    res.status(500).send("echo 'Error Server'");
   }
 }
