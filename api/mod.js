@@ -1,20 +1,33 @@
-#!/system/bin/sh
+export default async function handler(req, res) {
+  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc66f/raw/a623799f9de9120d904cb5ce6f0dca9ef090934/Arc.sh";
 
-URL="https://vanxproject.vercel.app/api/mod"
+  try {
+    // Menambahkan timeout agar tidak menggantung (hang) yang memicu error 500
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 8000); // Timeout 8 detik
 
-# Eksekusi langsung di RAM lewat pipe
-# Kita pakai perl sebagai alternatif kalau curl/wget gagal total,
-# tapi utamanya kita pakai curl/wget yang di-pipe ke sh
-execute_ram() {
-    # 1. Coba pakai curl
-    command -v curl >/dev/null 2>&1 && curl -sL "$1" | tr -d '\r' | sh && return
-    # 2. Coba pakai wget
-    command -v wget >/dev/null 2>&1 && wget -qO- --no-check-certificate "$1" | tr -d '\r' | sh && return
-    # 3. Coba pakai busybox
-    command -v busybox >/dev/null 2>&1 && busybox wget -qO- "$1" | tr -d '\r' | sh && return
+    const response = await fetch(GIST_URL, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:86.0) Gecko/20100101 Firefox/86.0'
+      }
+    });
     
-    echo "Gagal: Tidak ada tool downloader yang bisa memproses di RAM."
-    exit 1
-}
+    clearTimeout(id);
 
-execute_ram "$URL"
+    if (!response.ok) {
+      return res.status(response.status).send(`echo 'Gist error: ${response.status}'`);
+    }
+
+    const script = await response.text();
+
+    // Memastikan output bersih dari karakter CR
+    const cleanScript = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    res.setHeader("Content-Type", "text/plain");
+    return res.status(200).send(cleanScript);
+
+  } catch (err) {
+    return res.status(500).send(`echo 'Vercel Fetch Error: ${err.message}'`);
+  }
+}
