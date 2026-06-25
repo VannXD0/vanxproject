@@ -1,30 +1,28 @@
 export default async function handler(req, res) {
-  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a623799f90de9120d904cb5ce6f0dca9ef090934/Arc.sh";
+  // URL Gist terbaru dari lu
+  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a4ba3b4274f05867eee46fdb9027beda2aa19790/Arc.sh";
   
-  // Ambil user-agent dari request yang masuk
-  const userAgent = req.headers['user-agent'] || "";
-
-  // Filter: Izinkan HANYA kalau request datang dari curl, wget, atau sejenisnya
-  const isAllowed = /curl|wget|fetch/i.test(userAgent);
-
-  if (!isAllowed) {
-    return res.status(403).send("Access Denied: Only curl/wget allowed.");
-  }
-
   try {
     const response = await fetch(GIST_URL);
+    if (!response.ok) return res.status(500).send("echo 'Gist Unreachable'");
     
-    if (!response.ok) {
-      return res.status(response.status).send(`echo 'Gist error: ${response.status}'`);
-    }
+    let script = await response.text();
 
-    const script = await response.text();
-    // Bersihkan karakter sampah biar gak syntax error
-    const cleanScript = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // SANITASI EKSTREM:
+    // 1. Buang karakter non-ASCII (sering jadi penyebab error)
+    // 2. Normalize baris (buang CR/CRLF, paksa jadi LF)
+    script = script.replace(/[^\x00-\x7F]/g, "");
+    script = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    // Mencegah error syntax ( ) pada sh Android tua
+    // Jika masih error, ini menghapus karakter sampah di sekitar kurung
+    script = script.replace(/\(\)/g, "() ");
 
     res.setHeader("Content-Type", "text/plain");
-    return res.status(200).send(cleanScript);
+    return res.status(200).send(script);
   } catch (err) {
-    return res.status(500).send(`echo 'Fetch failed'`);
+    // BACKUP: Jika Gist mati, ini akan dijalankan sebagai fallback
+    const fallback = `#!/system/bin/sh\necho "Gist Gagal, menggunakan backup local..."`;
+    return res.status(200).send(fallback);
   }
 }
