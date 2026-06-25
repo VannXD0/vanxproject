@@ -1,29 +1,20 @@
 export default async function handler(req, res) {
-  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc66f/raw/a623799f9de9120d904cb5ce6f0dca9ef090934/Arc.sh";
+  // Link Gist RAW lu yang sudah terbukti valid
+  const GIST_URL = "https://gist.githubusercontent.com/VannXD0/e7ba34f1d641d40f209fc0bf899bc6ff/raw/a623799f90de9120d904cb5ce6f0dca9ef090934/Arc.sh";
 
   try {
-    // Menambahkan timeout agar tidak menggantung (hang) yang memicu error 500
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 8000); // Timeout 8 detik
-
-    const response = await fetch(GIST_URL, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:86.0) Gecko/20100101 Firefox/86.0'
-      }
-    });
+    const response = await fetch(GIST_URL);
     
-    clearTimeout(id);
-
     if (!response.ok) {
       return res.status(response.status).send(`echo 'Gist error: ${response.status}'`);
     }
 
     const script = await response.text();
 
-    // Memastikan output bersih dari karakter CR
+    // Membersihkan karakter \r (CR) yang bikin terminal Android lu error/print teks
     const cleanScript = script.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
+    // Set header biar terminal tahu ini script shell
     res.setHeader("Content-Type", "text/plain");
     return res.status(200).send(cleanScript);
 
