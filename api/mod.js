@@ -4,11 +4,9 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(GIST_URL);
     const script = await response.text();
-    
-    // Kirim sebagai teks agar langsung dibaca oleh shell
     res.setHeader("Content-Type", "text/plain");
     return res.status(200).send(script);
   } catch (err) {
-    return res.status(500).send("echo 'Gagal Fetch'");
+    return res.status(500).send("echo 'Gagal terhubung ke Gist'");
   }
 }
